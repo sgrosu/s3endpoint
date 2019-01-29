@@ -1,4 +1,10 @@
 
+provider "aws" {
+  access_key = "${var.ak}"
+  secret_key = "${var.sk}"
+  region = "eu-west-1"
+}
+
 data "aws_region" "current" {}
 
 data "aws_availability_zones" "available" {}
@@ -68,4 +74,41 @@ resource "aws_s3_bucket" "b" {
 resource "aws_vpc_endpoint" "s3" {
   vpc_id       = "${aws_vpc.demo-vpc.id}"
   service_name = "com.amazonaws.eu-west-1.s3"
+}
+
+data "aws_ami" "ubuntu" {
+  most_recent = true
+
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+
+  owners = ["099720109477"] # Canonical
+}
+
+resource "aws_instance" "test_s3" {
+  ami           = "${data.aws_ami.ubuntu.id}"
+  instance_type = "t2.micro"
+  subnet_id =  "${aws_subnet.demo-sub.*.id[0]}"
+  key_name = "${aws_key_pair.deployer.key_name}"
+
+  tags = {
+    Name = "Test_S3_Endpoint"
+  }
+}
+
+resource "aws_eip" "lb" {
+  instance = "${aws_instance.test_s3.id}"
+  vpc      = true
+}
+
+resource "aws_key_pair" "deployer" {
+  key_name   = "deployer-key"
+  public_key = "${var.pk}"
 }

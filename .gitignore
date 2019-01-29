@@ -1,0 +1,8 @@
+/.idea
+/.terraform
+base.tfvars
+*.plan
+*.tfstate
+*.backup
+ubu_rsa
+ubu_rsa.pub
