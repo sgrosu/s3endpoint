@@ -1,9 +1,3 @@
-provider "aws" {
-  access_key = "AKIAJICAUGWSDCKDCTDA"
-  secret_key = "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"
-  region = "eu-west-1"
-
-}
 
 data "aws_region" "current" {}
 
