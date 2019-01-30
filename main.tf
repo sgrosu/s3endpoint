@@ -1,3 +1,4 @@
+# Variables will be included in a base.tfvars file
 
 provider "aws" {
   access_key = "${var.ak}"
